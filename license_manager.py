@@ -3,12 +3,11 @@ import requests
 
 class LicenseManager:
     def __init__(self):
-        # আপাতত লোকাল সার্ভার লিংক, পরবর্তীতে Railway-এর ডেপ্লয় করা লিংক এখানে বসবে
-        self.api_url = "http://localhost:5000/api" 
+        # আপাতত লোকাল সার্ভার লিংক দেওয়া আছে। Railway-তে লাইভ হলে এখানে আপনার Railway URL বসবে।
+        self.api_url = "https://unick-scan-production-bc8e.up.railway.app/api" 
 
     def get_machine_id(self):
         try:
-            # মাদারবোর্ডের ইউনিক UUID বের করা
             output = subprocess.check_output('wmic csproduct get uuid').decode().split('\n')[1].strip()
             return output
         except Exception:
@@ -26,7 +25,7 @@ class LicenseManager:
                 elif data.get("status") == "trial":
                     return True, data.get("days_left")
                 else:
-                    return False, 0 # Expired or Blocked
+                    return False, 0
             return False, "Server Error"
         except Exception as e:
             print("API Connection Error:", e)

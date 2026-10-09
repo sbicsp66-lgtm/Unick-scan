@@ -30,17 +30,35 @@ class UnickScannerApp(ctk.CTk):
             self.show_main_scanner_ui(status)
 
     def show_expired_screen(self):
-        label = ctk.CTkLabel(self, text="TRIAL EXPIRED", font=("Arial", 30, "bold"), text_color="red")
-        label.pack(pady=100)
+        machine_id = self.license_manager.get_machine_id()
         
-        info = ctk.CTkLabel(self, text=f"Machine ID: {self.license_manager.get_machine_id()}\nPlease contact Admin to purchase a License Key.", font=("Arial", 16))
+        label = ctk.CTkLabel(self, text="TRIAL EXPIRED", font=("Arial", 30, "bold"), text_color="red")
+        label.pack(pady=60)
+        
+        info = ctk.CTkLabel(self, text="Please contact Admin to purchase a License Key.", font=("Arial", 16))
         info.pack(pady=10)
+
+        # Machine ID এবং Copy বাটন রাখার জন্য একটি ফ্রেম
+        id_frame = ctk.CTkFrame(self, fg_color="transparent")
+        id_frame.pack(pady=15)
+
+        id_label = ctk.CTkLabel(id_frame, text=f"Machine ID: {machine_id}", font=("Arial", 16, "bold"))
+        id_label.pack(side="left", padx=10)
+
+        btn_copy = ctk.CTkButton(id_frame, text="Copy", width=60, command=lambda: self.copy_to_clipboard(machine_id))
+        btn_copy.pack(side="left")
 
         self.entry_key = ctk.CTkEntry(self, placeholder_text="Enter License Key", width=300)
         self.entry_key.pack(pady=20)
 
         btn_activate = ctk.CTkButton(self, text="Activate", font=("Arial", 14), command=self.activate_software)
         btn_activate.pack()
+
+    def copy_to_clipboard(self, text):
+        self.clipboard_clear()
+        self.clipboard_append(text)
+        self.update()
+        messagebox.showinfo("Copied", "Machine ID copied to clipboard!")
 
     def activate_software(self):
         key = self.entry_key.get()
@@ -52,17 +70,11 @@ class UnickScannerApp(ctk.CTk):
         
         if success:
             messagebox.showinfo("Success", msg)
-            # স্ক্রিন রিফ্রেশ করে মূল স্ক্যানার UI তে নিয়ে যাওয়া
             for widget in self.winfo_children():
                 widget.destroy()
             self.show_main_scanner_ui("Activated")
         else:
-            messagebox.showerror("Error", msg)(self):
-        label = ctk.CTkLabel(self, text="TRIAL EXPIRED", font=("Arial", 30, "bold"), text_color="red")
-        label.pack(pady=100)
-        
-        info = ctk.CTkLabel(self, text=f"Machine ID: {self.license_manager.get_machine_id()}\nPlease contact Admin to purchase a License Key.", font=("Arial", 16))
-        info.pack(pady=10)
+            messagebox.showerror("Error", msg)
 
     def show_main_scanner_ui(self, status):
         # Top Bar
@@ -176,14 +188,10 @@ class UnickScannerApp(ctk.CTk):
 
     def delete_current(self):
         if self.current_image_index >= 0:
-            # File remove from disk
             img_path = self.scanned_images[self.current_image_index]
             if os.path.exists(img_path):
                 os.remove(img_path)
-            
-            # Remove from list
             self.scanned_images.pop(self.current_image_index)
-            
             if self.scanned_images:
                 self.current_image_index = len(self.scanned_images) - 1
                 self.update_preview()
