@@ -4,7 +4,7 @@ import requests
 class LicenseManager:
     def __init__(self):
         # আপাতত লোকাল সার্ভার লিংক দেওয়া আছে। Railway-তে লাইভ হলে এখানে আপনার Railway URL বসবে।
-        self.api_url = "https://unick-scan-production-bc8e.up.railway.app/api" 
+        self.api_url = "https://unick-scan-production.up.railway.app/api" 
 
     def get_machine_id(self):
         try:
